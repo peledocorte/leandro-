@@ -1,0 +1,123 @@
+/* Definições Gerais */
+body {
+    /* Define a largura e altura da tela (viewport) */
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    display: flex; /* Centraliza o elemento 'screen' */
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    overflow: hidden; /* Garante que nada fora do corpo seja visível */
+}
+
+/* d. Largura e Altura da Tela (Simulação do Contêiner Principal) */
+.screen {
+    width: 90%; /* Largura da "tela" onde o letreiro desliza */
+    height: 100px; /* Altura da "tela" */
+    border: 3px solid #333;
+    background-color: #fff;
+    /* Para f. Alinhamento: o flexbox no body já alinha o .screen. */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* e. Espaço Livre em torno do Letreiro (Margin/Padding dentro de .screen) */
+.marquee-container {
+    width: 100%;
+    height: 100%;
+    /* Define o espaço livre (padding) interno */
+    padding: 20px;
+    box-sizing: border-box; /* Inclui padding na altura/largura total */
+    overflow: hidden; /* CRUCIAL: Esconde o texto que sai do contêiner */
+    position: relative; /* Necessário para posicionar o texto em relação a ele */
+}
+
+/* Estilo do Texto */
+.marquee-text {
+    /* f. Alinhamento do texto (interno) */
+    text-align: center;
+    /* Ocupa a largura total para ajudar no posicionamento relativo */
+    width: max-content; 
+    white-space: nowrap; /* Impede que o texto quebre a linha */
+    font-size: 2em;
+    font-family: sans-serif;
+    color: #007bff;
+    font-weight: bold;
+
+    /* Posicionamento Inicial: Inicia fora da tela, à esquerda */
+    position: absolute;
+    left: 100%; /* Começa completamente fora à direita */
+    
+    /* ---------------------------------------------------- */
+    /* Animação - a., b., g. (Deslizamento, Volta e Velocidade) */
+    /* ---------------------------------------------------- */
+    
+    /* g. Controle de Velocidade: 15s é o tempo de uma iteração */
+    animation: slide-and-return 15s linear infinite alternate; 
+    /* 'alternate' faz com que ele volte (ping-pong) */
+    /* 'linear' mantém a velocidade constante */
+    /* 'infinite' repete indefinidamente */
+    /* A velocidade é controlada ajustando '15s' */
+}
+
+/* Definição da Animação (Keyframes) */
+@keyframes slide-and-return {
+    /* Estado Inicial (0%): b. Iniciando da esquerda para a direita. */
+    0% {
+        /* Move o texto 100% da sua própria largura para a esquerda
+           mais 100% da largura do contêiner para que ele comece
+           fora da tela, à direita (início padrão do letreiro) */
+        transform: translateX(0);
+    }
+    
+    /* Estado Final (100%): a. O letreiro deve deslizar até o outro lado. */
+    100% {
+        /* Move o texto completamente para a esquerda (começa a aparecer)
+           Ajuste o valor para garantir que ele chegue ao outro lado. 
+           (100% do contêiner *mais* a largura do texto para sumir). */
+        transform: translateX(calc(-100% - 100vw)); 
+        /* Usamos uma regra para garantir que o texto deslize COMPLETAMENTE 
+           da direita para a esquerda e vice-versa no modo 'alternate'. 
+           Ajuste o '-100vw' se o 'screen' tiver largura fixa. */
+    }
+}
+
+/* Correção para o efeito de ida e volta *dentro* do container: */
+@keyframes slide-and-return {
+    /* Início: Texto posicionado à esquerda do container */
+    0% {
+        /* Começa 100% à esquerda do seu container, efetivamente na borda esquerda */
+        transform: translateX(0); 
+    }
+    
+    /* Fim: Texto posicionado à direita do container, sumindo */
+    100% {
+        /* Move o texto para a direita até tocar a borda direita e sumir */
+        /* O valor é ajustado em tempo real pelo browser, dependendo do width: max-content */
+        /* Para um efeito mais previsível (esquerda-direita-esquerda), reajuste a posição */
+        
+        /* Assumindo que o texto precisa se mover da esquerda (0) até a direita (100% do container) */
+        /* Se a posição inicial for 'left: 0', 0% = translateX(0) e 100% = translateX(calc(100% - [largura do texto])) */
+
+        /* Vamos usar o exemplo de que ele vai da esquerda para a direita do contêiner */
+        transform: translateX(calc(100% - 100%)); /* Move 100% da largura do container */
+    }
+}
+
+/* **REVISÃO do Keyframe para Ping-Pong:**
+   Para o efeito de *bouncing* (toca e volta) DENTRO do `.marquee-container`, 
+   onde o texto é maior que o contêiner: */
+@keyframes slide-and-return {
+    /* Início: b. Inicia da Esquerda (mostrando a parte inicial do texto) */
+    0% {
+        /* Deixa o texto completamente alinhado à esquerda do container */
+        transform: translateX(0); 
+    }
+    
+    /* Fim: Chega à Direita (mostrando a parte final do texto) */
+    100% {
+        /* Move o texto para a esquerda o suficiente para a parte final encostar na direita do container */
+        transform: translateX(calc(-100% + 100%)); 
+        /* O valor é: -(Largura do Texto - Largura do Contêiner) */
+    }
+}
