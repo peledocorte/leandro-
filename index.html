@@ -2,38 +2,42 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Letreiro Deslizante</title>
+<title>Letreiro Deslizante Centralizado</title>
 
 <style>
-    /* Definição da área da "tela" */
-    #tela {
-        width: 800px;          /* largura da tela */
-        height: 150px;         /* altura da tela */
-        border: 3px solid #333;
-        margin: 40px auto;     /* espaço ao redor da tela */
-        overflow: hidden;      /* impede o texto de sair visualmente da área */
-        position: relative;
-        background: #f2f2f2;
+    /* Centraliza tudo na tela */
+    body {
         display: flex;
-        align-items: center;   /* alinhamento vertical */
-        justify-content: center; /* alinhamento horizontal */
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: #e6e6e6;
+        font-family: Arial, sans-serif;
     }
 
-    /* Estilo do letreiro */
+    /* Área da tela */
+    #tela {
+        width: 800px;           
+        height: 150px;           
+        border: 3px solid #333;
+        overflow: hidden;
+        background: #ffffff;
+        position: relative;
+
+        /* Centralizar interno */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Letreiro deslizante */
     #letreiro {
         position: absolute;
         white-space: nowrap;
         font-size: 28px;
         font-weight: bold;
         color: #0077cc;
-    }
-
-    /* Slider de velocidade */
-    #velocidadeBox {
-        width: 800px;
-        margin: 10px auto;
-        text-align: center;
-        font-family: Arial;
     }
 </style>
 </head>
@@ -43,30 +47,22 @@
     <div id="letreiro">Acredite em si mesmo e tudo será possível!</div>
 </div>
 
-<div id="velocidadeBox">
-    Velocidade: <input type="range" id="velocidade" min="1" max="20" value="5">
-</div>
-
 <script>
     const letreiro = document.getElementById("letreiro");
     const tela = document.getElementById("tela");
-    const sliderVel = document.getElementById("velocidade");
 
-    let pos = 0;                // posição inicial (esquerda)
-    let direcao = 1;            // 1 = direita, -1 = esquerda
+    let pos = 0;          // posição inicial 
+    let direcao = 1;      // 1 = direita, -1 = esquerda
+    const velocidade = 4; // velocidade fixa
 
     function animar() {
-        let velocidade = Number(sliderVel.value); // controla a velocidade
         pos += direcao * velocidade;
 
-        // limites do movimento
         const limiteDireita = tela.clientWidth - letreiro.clientWidth;
 
-        if (pos >= limiteDireita) {
-            direcao = -1; // volta
-        } else if (pos <= 0) {
-            direcao = 1; // vai
-        }
+        // inverter direção ao bater na borda
+        if (pos >= limiteDireita) direcao = -1;
+        if (pos <= 0) direcao = 1;
 
         letreiro.style.left = pos + "px";
         requestAnimationFrame(animar);
